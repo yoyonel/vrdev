@@ -4,13 +4,13 @@
 import glfw
 import ctypes
 import numpy
-from   numpy import array
-from   OpenGL import GL, GLU
-from   OpenGL.arrays import vbo
-from   OpenGL.GL import shaders
-from   OpenGL.raw.GL import _types
+from numpy import array
+from OpenGL import GL, GLU
+from OpenGL.arrays import vbo
+from OpenGL.GL import shaders
+from OpenGL.raw.GL import _types
 import PIL
-from   PIL import Image
+from PIL import Image
 import pyrr
 import sys
 import time
@@ -22,14 +22,12 @@ class Window():
         if texture:
             self.loadTexture(texture)
 
-
     def loadShader(self, vs, fs):
         VERTEX = open(vs).read()
         vertexShader = shaders.compileShader(VERTEX, GL.GL_VERTEX_SHADER)
         FRAGMENT = open(fs).read()
         fragmentShader = shaders.compileShader(FRAGMENT, GL.GL_FRAGMENT_SHADER)
         self.shader = shaders.compileProgram(vertexShader, fragmentShader)
-
 
     def loadTexture(self, texture):
         img = Image.open(texture).transpose(Image.FLIP_TOP_BOTTOM)
@@ -44,7 +42,7 @@ class Window():
         # fromstring, which means we have to do a bit of reorganization. The first
         # element in the data output by tostring() will be the top-left corner of
         # the image, with following values going left-to-right and lines going
-        # top-to-bottom.  So, we need to flip the vertical coordinate (y). 
+        # top-to-bottom.  So, we need to flip the vertical coordinate (y).
         self.texture = GL.glGenTextures(1)
         GL.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
@@ -56,7 +54,7 @@ class Window():
         GL.glGenerateMipmap(GL.GL_TEXTURE_2D)
 
         # Free/Unbind
-        GL.glBindTexture(GL.GL_TEXTURE_2D, 0);
+        GL.glBindTexture(GL.GL_TEXTURE_2D, 0)
 
 
 class GLApp():
@@ -67,28 +65,26 @@ class GLApp():
         self.lastframe = time.time()
         self.rendertime = 0.0
 
-
     def initialize(self):
         # Load Shader
         self.window = Window('007.vs', '007.frag', 'window.png')
 
         # Enable Transparency
-        GL.glEnable(GL.GL_BLEND);
-        GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
+        GL.glEnable(GL.GL_BLEND)
+        GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
 
         # Same Data as EBO w/ Indices for buffers
         vertexData = numpy.array([
-             # Positions       # Color         # Texture
-             0.5,  0.5, 0.0,   1.0, 0.0, 0.0,  1.0, 1.0, # Top Right
-             0.5, -0.5, 0.0,   0.0, 1.0, 0.0,  1.0, 0.0, # Bottom Right
-            -0.5, -0.5, 0.0,   0.0, 0.0, 1.0,  0.0, 0.0, # Bottom Left
-            -0.5,  0.5, 0.0,   1.0, 1.0, 0.0,  0.0, 1.0, # Top Left
+            # Positions       # Color         # Texture
+            0.5, 0.5, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0,  # Top Right
+            0.5, -0.5, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0,  # Bottom Right
+            -0.5, -0.5, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,  # Bottom Left
+            -0.5, 0.5, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,  # Top Left
         ], dtype=numpy.float32)
 
         indexData = numpy.array([
-            0, 1, 2, # First Triangle
-            0, 2, 3, # Second Triangle
+            0, 1, 2,  # First Triangle
+            0, 2, 3,  # Second Triangle
         ], dtype=numpy.uint32)
         self.index_size = indexData.size
 
@@ -116,10 +112,12 @@ class GLApp():
         # I like how offsets aren't documented either; http://pyopengl.sourceforge.net/documentation/manual-3.0/glVertexAttribPointer.html
         # offsets https://twistedpairdevelopment.wordpress.com/2013/02/16/using-array_buffers-in-pyopengl/
         # http://stackoverflow.com/questions/11132716/how-to-specify-buffer-offset-with-pyopengl
-        GL.glVertexAttribPointer(1, 3, GL.GL_FLOAT, GL.GL_FALSE, stride, ctypes.c_void_p((3 * ctypes.sizeof(_types.GLfloat))))
+        GL.glVertexAttribPointer(1, 3, GL.GL_FLOAT, GL.GL_FALSE, stride,
+                                 ctypes.c_void_p((3 * ctypes.sizeof(_types.GLfloat))))
         GL.glEnableVertexAttribArray(1)
 
-        GL.glVertexAttribPointer(2, 2, GL.GL_FLOAT, GL.GL_FALSE, stride, ctypes.c_void_p((6 * ctypes.sizeof(_types.GLfloat))))
+        GL.glVertexAttribPointer(2, 2, GL.GL_FLOAT, GL.GL_FALSE, stride,
+                                 ctypes.c_void_p((6 * ctypes.sizeof(_types.GLfloat))))
         GL.glEnableVertexAttribArray(2)
 
         # Unbind so we don't mess w/ them
@@ -128,7 +126,6 @@ class GLApp():
 
         # Wireframe Mode
         # GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
-
 
     def render(self):
         rendertime = time.time()
@@ -140,30 +137,29 @@ class GLApp():
         GL.glUseProgram(self.window.shader)
 
         # Bind Texture
-        GL.glBindTexture(GL.GL_TEXTURE_2D, self.window.texture);
+        GL.glBindTexture(GL.GL_TEXTURE_2D, self.window.texture)
 
         # Create transformations
         # transform = pyrr.Matrix44().identity()
         rad = numpy.radians(glfw.get_time() * 50.0)
         tr_translate = pyrr.matrix44.create_from_translation([0.5, -0.5, 0.0])
-        tr_scale     = pyrr.Matrix44().from_scale([1.5, 1.5, 0.5])
-        tr_rotation  = pyrr.matrix44.create_from_axis_rotation([0.0, 0.0, 1.0], rad)
+        tr_scale = pyrr.Matrix44().from_scale([1.5, 1.5, 0.5])
+        tr_rotation = pyrr.matrix44.create_from_axis_rotation([0.0, 0.0, 1.0], rad)
 
         # Applies right to left
         transform = tr_scale * tr_rotation * tr_translate
 
-
         loc = GL.glGetUniformLocation(self.window.shader, 'transform')
-        GL.glUniformMatrix4fv(loc, 1, GL.GL_FALSE, transform)
-
+        # GL.glUniformMatrix4fv(loc, 1, GL.GL_FALSE, transform)
+        GL.glUniformMatrix4fv(loc, 1, GL.GL_FALSE, transform.__array__().astype(numpy.float32))
 
         try:
             GL.glBindVertexArray(self.VAO)
-           
+
             # Draw a triangle
             # GL.glDrawArrays(GL.GL_TRIANGLES, 0, 3)
 
-            # draw triangle, starting index of the vertex array, # of vertices (6 = indexData.size), 
+            # draw triangle, starting index of the vertex array, # of vertices (6 = indexData.size),
             # EBO indexes remain the same (accounts for stride of extra data
             GL.glDrawElements(GL.GL_TRIANGLES, self.index_size, GL.GL_UNSIGNED_INT, None)
         finally:
@@ -174,18 +170,16 @@ class GLApp():
         self.rendertime = 1000 * (time.time() - rendertime)
         # print('%0.2fms' % self.rendertime)
 
-
-
     def run(self):
         # Initialize the library
         if not glfw.init():
             return
 
         # Set some window hints
-        glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3);
-        glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3);
-        glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL.GL_TRUE);
-        glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
+        glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
+        glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3)
+        glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL.GL_TRUE)
+        glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
         glfw.window_hint(glfw.SAMPLES, 16)
 
         # This works as expected
@@ -211,8 +205,7 @@ class GLApp():
 
         # Callbacks
         glfw.set_key_callback(self.w, self.on_key)
-        glfw.set_framebuffer_size_callback(self.w, self.on_resize);
-
+        glfw.set_framebuffer_size_callback(self.w, self.on_resize)
 
         # Make the window's context current
         glfw.make_context_current(self.w)
@@ -243,7 +236,6 @@ class GLApp():
 
         glfw.terminate()
 
-    
     # Callbacks
     def on_key(self, window, key, scancode, action, mods):
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
@@ -254,7 +246,6 @@ class GLApp():
 
         GL.glViewport(0, 0, width, height)
         pass
-    
 
 
 if __name__ == "__main__":

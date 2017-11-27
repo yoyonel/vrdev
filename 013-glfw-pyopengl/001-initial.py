@@ -26,7 +26,7 @@ shaderProgram = None
 VAO = None
 VBO = None
 
-### VERTEX SHADER
+# VERTEX SHADER
 VERTEX = """
 #version 330
 
@@ -42,7 +42,7 @@ void main()
 }
 """
 
-### FRAGMENT SHADER
+# FRAGMENT SHADER
 FRAGMENT = """
 #version 330
 
@@ -68,15 +68,15 @@ def initialize():
     shaderProgram = shaders.compileProgram(vertexShader, fragmentShader)
 
     vertexData = numpy.array([
-	# Vertex Positions - Clockwise
+        # Vertex Positions - Clockwise
         0.0, 0.5, 0.0, 1.0,     # Top
         0.5, -0.366, 0.0, 1.0,  # Right
-        -0.5, -0.366, 0.0, 1.0, # Left
+        -0.5, -0.366, 0.0, 1.0,  # Left
 
-	# Vertex Colours 
-        1.0, 0.0, 0.0, 1.0, # Top   (Red)
-        0.0, 1.0, 0.0, 1.0, # Right (Green)
-        0.0, 0.0, 1.0, 1.0, # Left  (Blue)
+        # Vertex Colours
+        1.0, 0.0, 0.0, 1.0,  # Top   (Red)
+        0.0, 1.0, 0.0, 1.0,  # Right (Green)
+        0.0, 0.0, 1.0, 1.0,  # Left  (Blue)
     ], dtype=numpy.float32)
 
     # Core OpenGL requires that at least one OpenGL vertex array be bound
@@ -87,16 +87,16 @@ def initialize():
     VBO = GL.glGenBuffers(1)
     GL.glBindBuffer(GL.GL_ARRAY_BUFFER, VBO)
     GL.glBufferData(GL.GL_ARRAY_BUFFER, vertexData.nbytes, vertexData,
-        GL.GL_STATIC_DRAW)
+                    GL.GL_STATIC_DRAW)
 
     # enable array and set up data
     GL.glEnableVertexAttribArray(0)
     GL.glEnableVertexAttribArray(1)
     GL.glVertexAttribPointer(0, 4, GL.GL_FLOAT, GL.GL_FALSE, 0,
-        None)
+                             None)
     # the last parameter is a pointer
     GL.glVertexAttribPointer(1, 4, GL.GL_FLOAT, GL.GL_FALSE, 0,
-        ctypes.c_void_p(48))
+                             ctypes.c_void_p(48))
 
     GL.glBindBuffer(GL.GL_ARRAY_BUFFER, 0)
     GL.glBindVertexArray(0)
@@ -127,10 +127,10 @@ def main():
         return
 
     # Set some window hints
-    glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3);
-    glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3);
-    glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL.GL_TRUE);
-    glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
+    glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
+    glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3)
+    glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL.GL_TRUE)
+    glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
     glfw.window_hint(glfw.SAMPLES, 16)
 
     # This works as expected
@@ -175,6 +175,7 @@ def main():
         glfw.poll_events()
 
     glfw.terminate()
+
 
 if __name__ == "__main__":
     main()
